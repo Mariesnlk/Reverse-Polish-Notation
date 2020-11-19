@@ -13,7 +13,7 @@ public class Main {
 
         RPNCalculator calculator = new RPNCalculator();
 
-        List<String> expression = calculator.splitLine(line);
+        List<String> expression = RPNCalculator.splitLine(line);
         Queue<String> result = calculator.convertToRPN(expression);
         System.out.println(result);
         System.out.println(calculator.RPNCalculate(result));

@@ -6,14 +6,14 @@ import java.util.regex.Pattern;
 
 public class RPNCalculator {
 
-    final static String EXPRESSION = "-?[0-9.]+|[A-Za-z]+|[-+*/()^]";
+    public static final String EXPRESSION = "-?[0-9.]+|[A-Za-z]+|[-+*/()^]";
+    public static Map<String, Integer> precedence = null;
 
     public double RPNCalculate(Queue<String> expressions) {
         Stack<Double> stack = new Stack<>();
         double op1;//operand
         double op2;
         double currVal = 0.0;
-        double convertToRadians = Math.toRadians(stack.pop());
         for (String exp : expressions) {
             if (isNumber(exp)) stack.push(Double.parseDouble(exp));
             else if (exp.length() == 1) {
@@ -49,6 +49,7 @@ public class RPNCalculator {
                         stack.push(currVal);
                 }
             } else if (exp.length() == 3) {
+                double convertToRadians = Math.toRadians(stack.pop());
                 switch (exp) {
                     case "sin":
                         currVal = Math.sin(convertToRadians);
@@ -58,7 +59,7 @@ public class RPNCalculator {
                         currVal = Math.cos(convertToRadians);
                         stack.push(currVal);
                         break;
-                    case "tg":
+                    case "tan":
                         currVal = Math.tan(convertToRadians);
                         stack.push(currVal);
                         break;
@@ -76,11 +77,52 @@ public class RPNCalculator {
 
     }
 
-    public Queue<String> convertToRPN(List<String> exp){
+    public Queue<String> convertToRPN(List<String> exp) {
         Queue<String> result = new LinkedList<>();
         Stack<String> stack = new Stack<>();
+        for (String token : exp) {
+            if ("(".equals(token)) {
+                stack.push(token);
+                continue;
+            }
+            if (")".equals(token)) {
+                while (!"(".equals(stack.peek()))
+                    result.add(stack.pop());
+                stack.pop();
+                continue;
+            }
+
+            if (precedence.containsKey(token)) {
+                while (!stack.empty() && precedence.get(token) <= precedence.get(stack.peek())) {
+                    result.add(stack.pop());
+                }
+                stack.push(token);
+                continue;
+            }
+            result.add(token);
+        }
+
+        while (!stack.isEmpty()) {
+            result.add(stack.pop());
+        }
 
         return result;
+    }
+
+    static {
+        Map<String, Integer> temp = new HashMap<>();
+        temp.put("sin", 5);
+        temp.put("cos", 5);
+        temp.put("tan", 5);
+        temp.put("ctg", 5);
+        temp.put("^", 4);
+        temp.put("/", 3);
+        temp.put("*", 3);
+        temp.put("+", 2);
+        temp.put("-", 2);
+        temp.put(")", 1);
+        temp.put("(", 0);
+        precedence = Collections.unmodifiableMap(temp);
     }
 
 
