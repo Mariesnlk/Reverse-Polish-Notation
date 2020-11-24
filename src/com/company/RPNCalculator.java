@@ -3,70 +3,72 @@ package com.company;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import static java.util.Collections.unmodifiableMap;
 
 public class RPNCalculator {
 
     public static final String EXPRESSION = "-?[0-9.]+|[A-Za-z]+|[-+*/()^]";
-    public static Map<String, Integer> precedence = null;
+    public static Map<String, Integer> precedence;
 
     public double RPNCalculate(Queue<String> expressions) {
         Stack<Double> stack = new Stack<>();
         double op1;//operand
         double op2;
-        double currVal = 0.0;
+        double currVal;
         for (String exp : expressions) {
             if (isNumber(exp)) stack.push(Double.parseDouble(exp));
             else if (exp.length() == 1) {
                 switch (exp.charAt(0)) {
-                    case '+':
+                    case '+' -> {
                         op1 = stack.pop();
                         op2 = stack.pop();
                         currVal = op1 + op2;
                         stack.push(currVal);
-                        break;
-                    case '-':
+                    }
+                    case '-' -> {
                         op1 = stack.pop();
                         op2 = stack.pop();
                         currVal = op1 - op2;
                         stack.push(currVal);
-                        break;
-                    case '^':
+                    }
+                    case '^' -> {
                         op1 = stack.pop();
                         op2 = stack.pop();
                         currVal = Math.pow(op2, op1);
                         stack.push(currVal);
-                        break;
-                    case '*':
+                    }
+                    case '*' -> {
                         op1 = stack.pop();
                         op2 = stack.pop();
                         currVal = op1 * op2;
                         stack.push(currVal);
-                        break;
-                    case '/':
+                    }
+                    case '/' -> {
                         op1 = stack.pop();
                         op2 = stack.pop();
                         currVal = op1 / op2;
                         stack.push(currVal);
+                    }
                 }
             } else if (exp.length() == 3) {
                 double convertToRadians = Math.toRadians(stack.pop());
                 switch (exp) {
-                    case "sin":
+                    case "sin" -> {
                         currVal = Math.sin(convertToRadians);
                         stack.push(currVal);
-                        break;
-                    case "cos":
+                    }
+                    case "cos" -> {
                         currVal = Math.cos(convertToRadians);
                         stack.push(currVal);
-                        break;
-                    case "tan":
+                    }
+                    case "tan" -> {
                         currVal = Math.tan(convertToRadians);
                         stack.push(currVal);
-                        break;
-                    case "ctg":
+                    }
+                    case "ctg" -> {
                         currVal = 1.0 / Math.tan(convertToRadians);
                         stack.push(currVal);
-                        break;
+                    }
                 }
             }
             System.out.println("current: " + exp + ", stack: " + stack);
@@ -122,7 +124,7 @@ public class RPNCalculator {
         temp.put("-", 2);
         temp.put(")", 1);
         temp.put("(", 0);
-        precedence = Collections.unmodifiableMap(temp);
+        precedence = unmodifiableMap(temp);
     }
 
 
