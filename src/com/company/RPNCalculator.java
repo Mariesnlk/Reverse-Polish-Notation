@@ -9,28 +9,7 @@ public class RPNCalculator {
     public static final String EXPRESSION = "-?[0-9.]+|[A-Za-z]+|[-+*/()\\[\\]^=,]";
     public static Map<String, Integer> precedence;
 
-    public static  Map<String, Integer> presLoad(Map<String, Integer> precedence){
-        Map<String, Integer> tablePrior = new HashMap<>();
-        tablePrior.put("sin", 5);
-        tablePrior.put("cos", 5);
-        tablePrior.put("tan", 5);
-        tablePrior.put("ctg", 5);
-        tablePrior.put("^", 4);
-        tablePrior.put("/", 3);
-        tablePrior.put("*", 3);
-        tablePrior.put("+", 2);
-        tablePrior.put("-", 2);
-        tablePrior.put(",", 1);
-        tablePrior.put("=", 1);
-        tablePrior.put("]", 1);
-        tablePrior.put(")", 1);
-        tablePrior.put("[", 0);
-        tablePrior.put("(", 0);
-        precedence = tablePrior;
-        return precedence;
-    }
-
-    public double RPNCalculate(List<String> expressions) {
+    public double RPNCalculate(List<String> expressions) throws EmptyStackException {
         Stack<Double> stack = new Stack<>();
         double op1;//operand
         double op2;
@@ -104,16 +83,12 @@ public class RPNCalculator {
         for (String symbol : expr) {
             if ("(".equals(symbol)) {
                 counter = 2;
-//                stack.push("Fn");
                 stack.push(symbol);
                 continue;
             }
             if (")".equals(symbol)) {
                 while (!"(".equals(stack.peek()))
                     res.add(stack.pop());
-//                res.add("Fn");
-//                res.add(Integer.toString(counter));
-//                res.add(symbol);
                 stack.pop();
                 continue;
             }
@@ -127,9 +102,6 @@ public class RPNCalculator {
                 while (!"[".equals(stack.peek())) {
                     res.add(stack.pop());
                 }
-//                while (!"(".equals(stack.peek())) {
-//                    res.add(stack.pop());
-//                }
                 continue;
             }
             if ("]".equals(symbol)) {
@@ -156,25 +128,9 @@ public class RPNCalculator {
         return res;
     }
 
-//    static {
-//        temp.put("sin", 5);
-//        temp.put("cos", 5);
-//        temp.put("tan", 5);
-//        temp.put("ctg", 5);
-//        temp.put("^", 4);
-//        temp.put("/", 3);
-//        temp.put("*", 3);
-//        temp.put("+", 2);
-//        temp.put("-", 2);
-//        temp.put(",", 1);
-//        temp.put("=", 1);
-//        temp.put("]", 1);
-//        temp.put(")", 1);
-//        temp.put("[", 0);
-//        temp.put("(", 0);
-//        precedence = temp;
-//    }
-
+    /**
+     * split string into expressions
+     */
     public static List<String> splitLine(String line) {
         Pattern pattern = Pattern.compile(EXPRESSION);
         Matcher match = pattern.matcher(line);
@@ -185,7 +141,46 @@ public class RPNCalculator {
         return result;
     }
 
+    /**
+     * converted list to string to avoid [] and ,
+     */
+    public String listToString(List<String> elements) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (String elem : elements) {
+            stringBuilder.append(elem).append(" ");
+        }
+        return stringBuilder.toString();
+    }
+
+    /**
+     * check if string is a number for math operations
+     */
     private boolean isNumber(String num) {
         return num.matches("-?[0-9.]+");
     }
+
+    /**
+     * created hashmap with precedence and it`s priority
+     */
+    public static Map<String, Integer> presLoad(Map<String, Integer> precedence) {
+        Map<String, Integer> tablePrior = new HashMap<>();
+        tablePrior.put("sin", 5);
+        tablePrior.put("cos", 5);
+        tablePrior.put("tan", 5);
+        tablePrior.put("ctg", 5);
+        tablePrior.put("^", 4);
+        tablePrior.put("/", 3);
+        tablePrior.put("*", 3);
+        tablePrior.put("-", 2);
+        tablePrior.put("+", 2);
+        tablePrior.put(",", 1);
+        tablePrior.put("=", 1);
+        tablePrior.put("]", 1);
+        tablePrior.put(")", 1);
+        tablePrior.put("[", 0);
+        tablePrior.put("(", 0);
+        precedence = tablePrior;
+        return precedence;
+    }
+
 }
